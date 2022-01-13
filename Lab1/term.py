@@ -1,5 +1,17 @@
+from enum import  Enum
+
+class TermType(Enum):
+    EMPTY = 0
+    CONSTANT = 1
+    VARIABLE = 2
+    FUNCTION = 3
+
 class Term:
     def __init__(self, term: str):
+        if term == '':
+            self.type = TermType.EMPTY
+            return
+
         self.__term = term
 
     def __str__(self):
