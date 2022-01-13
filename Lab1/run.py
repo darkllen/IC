@@ -2,7 +2,7 @@ import json
 from typing import Union
 
 from substitution import Substitution
-from term import Term
+from term import Term,TermType
 
 input_file = 'input.txt'
 
@@ -10,23 +10,23 @@ input_file = 'input.txt'
 def unify(term_a: Term, term_b: Term) -> Union[None, bool, Substitution]:
     print('term_a', term_a)
     print('term_b', term_b)
-    if ((term_a.is_constant and term_b.is_constant)
-            or (term_a.is_empty and term_b.is_empty)):
+    if ((term_a.type == TermType.CONSTANT and term_b.type == TermType.CONSTANT)
+            or (term_a.type == TermType.EMPTY and term_b.type == TermType.EMPTY)):
         if term_a == term_b:
             return None
         else:
             return False
-    elif term_a.is_variable:
+    elif term_a.type == TermType.VARIABLE:
         if term_a.occurs_in(term_b):
             return False
         else:
             return Substitution(term_a, term_b)
-    elif term_b.is_variable:
+    elif term_b.type == TermType.VARIABLE:
         if term_b.occurs_in(term_a):
             return False
         else:
             return Substitution(term_b, term_a)
-    elif term_a.is_empty or term_b.is_empty:
+    elif term_a.type == TermType.EMPTY or term_b.type == TermType.EMPTY:
         return False
 
     head_a, head_b = term_a.head, term_b.head

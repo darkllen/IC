@@ -6,5 +6,5 @@ class Substitution:
         self.__term_a = term_a
         self.__term_b = term_b
 
-    def apply(self) -> Term:
+    def apply(self, terms) -> Term:
         pass
