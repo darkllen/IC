@@ -11,6 +11,7 @@ class Term:
     def __init__(self, term: str):
         self.term = ''
         self.subterms = []
+        self.is_unified = False
 
         if term == '':
             self.type = TermType.EMPTY
@@ -23,20 +24,24 @@ class Term:
         else:
             self.type = TermType.FUNCTION
             self.term = term[0]
-            self.subterms = re.findall('\w\(.*\)|\w', term[1:-1])
+            self.subterms = [Term(subterm) for subterm in re.findall('\w\(.*\)|\w', term[1:-1])]
 
     def __str__(self):
         string = f'{self.term}'
         if self.type == TermType.FUNCTION:
-            string += f'({",".join(self.subterms)})'
+            string += f'({",".join([str(subterm) for subterm in self.subterms])})'
         return string
 
     def __eq__(self, other):
         return self.term == other.term and self.subterms == other.subterms
 
-    @property
+    # @property
     def head(self):
-        return Term(self.subterms[0])
+        for i in self.subterms:
+            if not i.is_unified:
+                i.is_unified = True
+                return Term(str(i))
+        return Term('')
 
     def occurs_in(self, term_b) -> bool:
-        return any(self.term in term for term in term_b.subterms)
+        return any(self.term in str(term) for term in term_b.subterms)

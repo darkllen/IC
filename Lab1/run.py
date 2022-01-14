@@ -8,8 +8,8 @@ input_file = 'input.txt'
 
 
 def unify(term_a: Term, term_b: Term) -> Union[None, bool, Substitution]:
-    print('term_a', term_a)
-    print('term_b', term_b)
+    # print('term_a', term_a)
+    # print('term_b', term_b)
     if ((term_a.type == TermType.CONSTANT and term_b.type == TermType.CONSTANT)
             or (term_a.type == TermType.EMPTY and term_b.type == TermType.EMPTY)):
         if term_a == term_b:
@@ -29,11 +29,17 @@ def unify(term_a: Term, term_b: Term) -> Union[None, bool, Substitution]:
     elif term_a.type == TermType.EMPTY or term_b.type == TermType.EMPTY:
         return False
 
-    head_a, head_b = term_a.head, term_b.head
+    head_a, head_b = term_a.head(), term_b.head()
     substitution1 = unify(head_a, head_b)
     if not substitution1:
         return False
-    te1 = substitution1.apply()
+    te1 = substitution1.apply(term_a)
+    te2 = substitution1.apply(term_b)
+    print(te1, te2)
+    substitution2 = unify(te1, te2)
+    if not substitution2:
+        return False
+    print(substitution1, substitution2)
 
 
 with open(input_file, 'r') as f:
