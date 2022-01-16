@@ -1,5 +1,6 @@
 import json
 from typing import Union
+from copy import  deepcopy
 
 from substitution import Substitution
 from term import Term,TermType
@@ -13,36 +14,57 @@ def unify(term_a: Term, term_b: Term) -> Union[None, bool, Substitution]:
     if ((term_a.type == TermType.CONSTANT and term_b.type == TermType.CONSTANT)
             or (term_a.type == TermType.EMPTY and term_b.type == TermType.EMPTY)):
         if term_a == term_b:
-            return None
+            return [Substitution(None, None)]
         else:
             return False
     elif term_a.type == TermType.VARIABLE:
         if term_a.occurs_in(term_b):
             return False
+        if term_a.term == term_b.term:
+            return [Substitution(None, None)]
         else:
-            return Substitution(term_a, term_b)
+            return [Substitution(term_a, term_b)]
     elif term_b.type == TermType.VARIABLE:
         if term_b.occurs_in(term_a):
             return False
         else:
-            return Substitution(term_b, term_a)
+            return [Substitution(term_b, term_a)]
     elif term_a.type == TermType.EMPTY or term_b.type == TermType.EMPTY:
         return False
 
     head_a, head_b = term_a.head(), term_b.head()
     substitution1 = unify(head_a, head_b)
-    if not substitution1:
+    if substitution1 is False:
         return False
-    te1 = substitution1.apply(term_a)
-    te2 = substitution1.apply(term_b)
-    print(te1, te2)
-    substitution2 = unify(te1, te2)
-    if not substitution2:
-        return False
-    print(substitution1, substitution2)
+    te1 = Substitution.apply(substitution1, term_a.tail())
+    te2 = Substitution.apply(substitution1, term_b.tail())
 
+    substitution2 = unify(te1,te2)
+    if substitution2 is False and not (te1.type == TermType.EMPTY and te2.type == TermType.EMPTY):
+        return False
+    return [sub for sub in substitution1 + substitution2 if not sub.is_none] if substitution2 else substitution1
 
 with open(input_file, 'r') as f:
     terms = json.loads(f.read())
-    e1, e2 = terms['term_a'], terms['term_b']
-    unify(Term(e1), Term(e2))
+    terms = terms[3]
+    e1, e2 = Term(terms['term_a']), Term(terms['term_b'])
+    res = unify(e1, e2)
+
+    print('term a: ', e1)
+    print('term b: ', e2)
+    print('res: ', res)
+    if res:
+        for ind, sub in enumerate(res):
+            print()
+            print(f'step {ind+1}:')
+            e1_i, e2_i = deepcopy(e1), deepcopy(e2)
+            e1, e2 = Substitution.apply([sub],e1), Substitution.apply([sub],e2)
+            print('sub:         ', sub)
+            print('term a prev: ', e1_i)
+            print('term a new:  ', e1)
+            print('term b prev: ', e2_i)
+            print('term b new:  ', e2)
+
+        print()
+        print('term a res: ', e1)
+        print('term b res: ', e2)
