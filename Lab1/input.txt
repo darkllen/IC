@@ -1,6 +1,6 @@
 [
 {
-    "term_index": 5
+    "term_index": 1
 },
 {
     "term_a":"f(a,g(e(x),y))",
