@@ -61,3 +61,6 @@ class Term:
 
     def __repr__(self):
         return  self.__str__()
+
+    def __eq__(self, other):
+        return  self.term == other.term and self.subterms == other.subterms

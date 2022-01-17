@@ -9,8 +9,6 @@ input_file = 'input.txt'
 
 
 def unify(term_a: Term, term_b: Term) -> Union[None, bool, Substitution]:
-    # print('term_a', term_a)
-    # print('term_b', term_b)
     if ((term_a.type == TermType.CONSTANT and term_b.type == TermType.CONSTANT)
             or (term_a.type == TermType.EMPTY and term_b.type == TermType.EMPTY)):
         if term_a == term_b:
@@ -31,6 +29,8 @@ def unify(term_a: Term, term_b: Term) -> Union[None, bool, Substitution]:
             return [Substitution(term_b, term_a)]
     elif term_a.type == TermType.EMPTY or term_b.type == TermType.EMPTY:
         return False
+    elif term_a.type == TermType.FUNCTION and term_b.type == TermType.FUNCTION and term_a.term != term_b.term:
+        return False
 
     head_a, head_b = term_a.head(), term_b.head()
     substitution1 = unify(head_a, head_b)
@@ -40,13 +40,14 @@ def unify(term_a: Term, term_b: Term) -> Union[None, bool, Substitution]:
     te2 = Substitution.apply(substitution1, term_b.tail())
 
     substitution2 = unify(te1,te2)
-    if substitution2 is False and not (te1.type == TermType.EMPTY and te2.type == TermType.EMPTY):
+    if substitution2 is False:
         return False
-    return [sub for sub in substitution1 + substitution2 if not sub.is_none] if substitution2 else substitution1
+    return [sub for sub in substitution1 + substitution2 if not sub.is_none]
+
 
 with open(input_file, 'r') as f:
     terms = json.loads(f.read())
-    terms = terms[3]
+    terms = terms[terms[0]["term_index"]]
     e1, e2 = Term(terms['term_a']), Term(terms['term_b'])
     res = unify(e1, e2)
 

@@ -1,5 +1,8 @@
 [
 {
+    "term_index": 5
+},
+{
     "term_a":"f(a,g(e(x),y))",
     "term_b":"f(x,z)"
 },
@@ -12,6 +15,10 @@
     "term_b":"f(d,b,g)"
 },
 {
-    "term_a":"a(b)",
-    "term_b":"e(f(b))"
+    "term_a":"a(c)",
+    "term_b":"a(f(b))"
+},
+{
+    "term_a":"a(c)",
+    "term_b":"q(f(b))"
 }]
