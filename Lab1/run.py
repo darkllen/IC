@@ -16,14 +16,14 @@ def unify(term_a: Term, term_b: Term) -> Union[None, bool, Substitution]:
         else:
             return False
     elif term_a.type == TermType.VARIABLE:
-        if term_a.occurs_in(term_b):
+        if term_a in term_b:
             return False
         if term_a.term == term_b.term:
             return [Substitution(None, None)]
         else:
             return [Substitution(term_a, term_b)]
     elif term_b.type == TermType.VARIABLE:
-        if term_b.occurs_in(term_a):
+        if term_b in term_a:
             return False
         else:
             return [Substitution(term_b, term_a)]
@@ -36,8 +36,14 @@ def unify(term_a: Term, term_b: Term) -> Union[None, bool, Substitution]:
     substitution1 = unify(head_a, head_b)
     if substitution1 is False:
         return False
-    te1 = Substitution.apply(substitution1, term_a.tail())
-    te2 = Substitution.apply(substitution1, term_b.tail())
+
+    term_a.apply(substitution1)
+    te1 = term_a.tail()
+    te2 = term_b.tail()
+
+
+    # te1 = Substitution.apply(substitution1, term_a.tail())
+    # te2 = Substitution.apply(substitution1, term_b.tail())
 
     substitution2 = unify(te1,te2)
     if substitution2 is False:
@@ -45,27 +51,49 @@ def unify(term_a: Term, term_b: Term) -> Union[None, bool, Substitution]:
     return [sub for sub in substitution1 + substitution2 if not sub.is_none]
 
 
+def generate_h_n(n:int):
+    h1 = 'h('
+    x = [f'x{n + 1}' for n in range(n)]
+    y = [f'f(y{n},y{n})' for n in range(n)]
+    h1 += ','.join(x + y)
+    h1 += f',y{n})'
+
+    h2 = 'h('
+    x = [f'f(x{n},x{n})' for n in range(n)]
+    y = [f'y{n + 1}' for n in range(n)]
+    h2 += ','.join(x + y)
+    h2 += f',x{n})'
+
+    return Term(h1), Term(h2)
+
+import time
 with open(input_file, 'r') as f:
     terms = json.loads(f.read())
     terms = terms[terms[0]["term_index"]]
-    e1, e2 = Term(terms['term_a']), Term(terms['term_b'])
+
+    # e1, e2 = Term(terms['term_a']), Term(terms['term_b'])
+
+    e1, e2 = generate_h_n(19)
+    e1_i, e2_i = deepcopy(e1), deepcopy(e2)
+    print('start')
+    t = time.time()
     res = unify(e1, e2)
-
-    print('term a: ', e1)
-    print('term b: ', e2)
-    print('res: ', res)
-    if res:
-        for ind, sub in enumerate(res):
-            print()
-            print(f'step {ind+1}:')
-            e1_i, e2_i = deepcopy(e1), deepcopy(e2)
-            e1, e2 = Substitution.apply([sub],e1), Substitution.apply([sub],e2)
-            print('sub:         ', sub)
-            print('term a prev: ', e1_i)
-            print('term a new:  ', e1)
-            print('term b prev: ', e2_i)
-            print('term b new:  ', e2)
-
-        print()
-        print('term a res: ', e1)
-        print('term b res: ', e2)
+    print('res time: ', time.time() - t)
+    # print('term a: ', e1_i)
+    # print('term b: ', e2_i)
+    # print('res: ', res)
+    # if res:
+    #     for ind, sub in enumerate(res):
+    #         print()
+    #         print(f'step {ind+1}:')
+    #         e1_ii, e2_ii = deepcopy(e1_i), deepcopy(e2_i)
+    #         e1_i, e2_i = e1_i.apply([Substitution(sub.copied_a, sub.copied_b)]), e2_i.apply([Substitution(sub.copied_a, sub.copied_b)])
+    #         print('sub:         ', sub)
+    #         print('term a prev: ', e1_ii)
+    #         print('term a new:  ', e1_i)
+    #         print('term b prev: ', e2_ii)
+    #         print('term b new:  ', e2_i)
+    #
+    #     print()
+    #     print('term a res: ', e1_i)
+    #     print('term b res: ', e2_i)
