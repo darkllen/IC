@@ -41,10 +41,6 @@ def unify(term_a: Term, term_b: Term) -> Union[None, bool, Substitution]:
     te1 = term_a.tail()
     te2 = term_b.tail()
 
-
-    # te1 = Substitution.apply(substitution1, term_a.tail())
-    # te2 = Substitution.apply(substitution1, term_b.tail())
-
     substitution2 = unify(te1,te2)
     if substitution2 is False:
         return False
@@ -67,31 +63,34 @@ def generate_h_n(n:int):
     return Term(h1), Term(h2)
 
 import time
+import sys
 with open(input_file, 'r') as f:
+    sys.setrecursionlimit(10000)
     terms = json.loads(f.read())
     terms = terms[terms[0]["term_index"]]
-
+    n = 1
     # e1, e2 = Term(terms['term_a']), Term(terms['term_b'])
+    e1, e2 = generate_h_n(n)
 
-    e1, e2 = generate_h_n(1)
-    e1_i, e2_i = deepcopy(e1), deepcopy(e2)
     print('start')
     t = time.time()
     res = unify(e1, e2)
     print('res time: ', time.time() - t)
-    # print('term a: ', e1_i)
-    # print('term b: ', e2_i)
-    # print('res: ', res)
+    Term.INNER_VARS = {}
+    e1_i, e2_i = generate_h_n(n)
+    print('term a: ', e1_i)
+    print('term b: ', e2_i)
+    print('res: ', res)
+    #
     # if res:
     #     for ind, sub in enumerate(res):
     #         print()
     #         print(f'step {ind+1}:')
-    #         e1_ii, e2_ii = deepcopy(e1_i), deepcopy(e2_i)
-    #         e1_i, e2_i = e1_i.apply([Substitution(sub.copied_a, sub.copied_b)]), e2_i.apply([Substitution(sub.copied_a, sub.copied_b)])
+    #         e1_i.apply([Substitution(sub.copied_a, sub.copied_b)])
     #         print('sub:         ', sub)
     #         print('term a prev: ', e1_ii)
     #         print('term a new:  ', e1_i)
-    #         print('term b prev: ', e2_ii)
+    #         # print('term b prev: ', e2_ii)
     #         print('term b new:  ', e2_i)
     #
     #     print()

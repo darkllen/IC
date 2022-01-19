@@ -1,13 +1,14 @@
 from term import Term
-
+from copy import copy, deepcopy
 
 class Substitution:
     def __init__(self, term_a: Term, term_b: Term):
         self.term_a = term_a
         self.term_b = term_b
 
-        self.copied_a = str(self.term_a)
-        self.copied_b = str(self.term_b)
+        if not self.is_none:
+            self.copied_a = deepcopy(term_a)
+            self.copied_b = deepcopy(term_b)
 
     @property
     def is_none(self):

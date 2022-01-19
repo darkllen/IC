@@ -12,15 +12,10 @@ class Term:
     INNER_VARS = {}
 
     def __init__(self, term):
-        # if term_object:
-        #     self.term = term_object.term
-        #     self.subterms = [Term(inner_vars=inner_vars, term_object=sub) for sub in term_object.subterms]
-        #     self.type = term_object.type
-        #     return
 
         self.term = ''
         self.subterms = []
-        self.inner = {}
+        self.inner = set()
 
         if term == '':
             self.type = TermType.EMPTY
@@ -49,21 +44,21 @@ class Term:
                         if term[start_i:end_i] in self.INNER_VARS:
                             var = self.INNER_VARS[term[start_i:end_i]]
                             subterms.append(var)
-                            self.inner.update(var.inner) if var.type == TermType.FUNCTION else self.inner.update({var.term})
+                            self.inner.update(var.inner) if var.type == TermType.FUNCTION else self.inner.add(var.term)
                         else:
                             var = Term(term[start_i:end_i])
                             subterms.append(var)
-                            self.inner.update(var.inner) if var.type == TermType.FUNCTION else self.inner.update({var.term})
+                            self.inner.update(var.inner) if var.type == TermType.FUNCTION else self.inner.add(var.term)
                         start_i = end_i + 1
                 if term[end_i] == ',' and count == 0:
                     if term[start_i:end_i] in self.INNER_VARS:
                         var = self.INNER_VARS[term[start_i:end_i]]
                         subterms.append(var)
-                        self.inner.update(var.inner) if var.type == TermType.FUNCTION else self.inner.update({var.term})
+                        self.inner.update(var.inner) if var.type == TermType.FUNCTION else self.inner.add(var.term)
                     else:
                         var = Term(term[start_i:end_i])
                         subterms.append(var)
-                        self.inner.update(var.inner) if var.type == TermType.FUNCTION else self.inner.update({var.term})
+                        self.inner.update(var.inner) if var.type == TermType.FUNCTION else self.inner.add(var.term)
                     start_i = end_i+1
                 end_i+=1
 
@@ -111,11 +106,4 @@ class Term:
         return self.term == other.term and self.subterms == other.subterms if isinstance(other, Term) else False
 
     def __contains__(self, item):
-        for i in self.subterms:
-            if i.type == TermType.VARIABLE and i == item:
-                return True
-            else:
-                is_in = item in i
-                if is_in:
-                    return True
-        return False
+        return item.term in self.inner
