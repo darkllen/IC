@@ -11,7 +11,7 @@ class TermType(Enum):
 class Term:
     INNER_VARS = {}
 
-    def __init__(self, term: str = None):
+    def __init__(self, term):
         # if term_object:
         #     self.term = term_object.term
         #     self.subterms = [Term(inner_vars=inner_vars, term_object=sub) for sub in term_object.subterms]
@@ -20,6 +20,7 @@ class Term:
 
         self.term = ''
         self.subterms = []
+        self.inner = {}
 
         if term == '':
             self.type = TermType.EMPTY
@@ -46,15 +47,23 @@ class Term:
                     count -=1
                     if end_i == len(term)-1:
                         if term[start_i:end_i] in self.INNER_VARS:
-                            subterms.append(self.INNER_VARS[term[start_i:end_i]])
+                            var = self.INNER_VARS[term[start_i:end_i]]
+                            subterms.append(var)
+                            self.inner.update(var.inner) if var.type == TermType.FUNCTION else self.inner.update({var.term})
                         else:
-                            subterms.append(Term(term[start_i:end_i]))
+                            var = Term(term[start_i:end_i])
+                            subterms.append(var)
+                            self.inner.update(var.inner) if var.type == TermType.FUNCTION else self.inner.update({var.term})
                         start_i = end_i + 1
                 if term[end_i] == ',' and count == 0:
                     if term[start_i:end_i] in self.INNER_VARS:
-                        subterms.append(self.INNER_VARS[term[start_i:end_i]])
+                        var = self.INNER_VARS[term[start_i:end_i]]
+                        subterms.append(var)
+                        self.inner.update(var.inner) if var.type == TermType.FUNCTION else self.inner.update({var.term})
                     else:
-                        subterms.append(Term(term[start_i:end_i]))
+                        var = Term(term[start_i:end_i])
+                        subterms.append(var)
+                        self.inner.update(var.inner) if var.type == TermType.FUNCTION else self.inner.update({var.term})
                     start_i = end_i+1
                 end_i+=1
 

@@ -73,7 +73,7 @@ with open(input_file, 'r') as f:
 
     # e1, e2 = Term(terms['term_a']), Term(terms['term_b'])
 
-    e1, e2 = generate_h_n(19)
+    e1, e2 = generate_h_n(1)
     e1_i, e2_i = deepcopy(e1), deepcopy(e2)
     print('start')
     t = time.time()
