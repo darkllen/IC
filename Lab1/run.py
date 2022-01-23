@@ -1,6 +1,9 @@
 import json
 from typing import Union
-from copy import  deepcopy
+import time
+import sys
+
+from copy import deepcopy
 
 from substitution import Substitution
 from term import Term,TermType
@@ -62,37 +65,52 @@ def generate_h_n(n:int):
 
     return Term(h1), Term(h2)
 
-import time
-import sys
-with open(input_file, 'r') as f:
-    sys.setrecursionlimit(10000)
-    terms = json.loads(f.read())
-    terms = terms[terms[0]["term_index"]]
-    n = 1
-    # e1, e2 = Term(terms['term_a']), Term(terms['term_b'])
-    e1, e2 = generate_h_n(n)
 
-    print('start')
-    t = time.time()
-    res = unify(e1, e2)
-    print('res time: ', time.time() - t)
-    Term.INNER_VARS = {}
-    e1_i, e2_i = generate_h_n(n)
-    print('term a: ', e1_i)
-    print('term b: ', e2_i)
-    print('res: ', res)
-    #
-    # if res:
-    #     for ind, sub in enumerate(res):
-    #         print()
-    #         print(f'step {ind+1}:')
-    #         e1_i.apply([Substitution(sub.copied_a, sub.copied_b)])
-    #         print('sub:         ', sub)
-    #         print('term a prev: ', e1_ii)
-    #         print('term a new:  ', e1_i)
-    #         # print('term b prev: ', e2_ii)
-    #         print('term b new:  ', e2_i)
-    #
-    #     print()
-    #     print('term a res: ', e1_i)
-    #     print('term b res: ', e2_i)
+def read_from_json():
+    with open(input_file, 'r') as f:
+        sys.setrecursionlimit(10000)
+        terms = json.loads(f.read())
+        terms = terms[terms[0]["term_index"]]
+        return Term(terms['term_a']), Term(terms['term_b'])
+
+
+def print_res(res, e1_i, e2_i):
+    if res:
+        print('-------------------')
+        for ind, sub in enumerate(res):
+            print(f'step {ind + 1}:')
+            print()
+            e1_prev, e2_prev = deepcopy(e1_i), deepcopy(e2_i)
+            e1_i.apply_str(Substitution(sub.copied_a, sub.copied_b))
+            e2_i.apply_str(Substitution(sub.copied_a, sub.copied_b))
+            print('sub:         ', sub)
+            print()
+            print('term a prev: ', e1_prev)
+            print('term a new:  ', e1_i)
+            print()
+            print('term b prev: ', e2_prev)
+            print('term b new:  ', e2_i)
+            print('-------------------------')
+        print()
+        print('term a res: ', e1_i)
+        print('term b res: ', e2_i)
+
+e1, e2 = read_from_json()
+# n = 1
+# e1, e2 = generate_h_n(n)
+
+print('start')
+t = time.time()
+res = unify(e1, e2)
+print('res time: ', time.time() - t)
+Term.INNER_VARS = {}
+# e1_i, e2_i = generate_h_n(n)
+e1_i, e2_i = read_from_json()
+print('term a:   ', e1_i)
+print('term b:   ', e2_i)
+print('res:      ', res)
+
+print_res(res, e1_i, e2_i)
+
+
+

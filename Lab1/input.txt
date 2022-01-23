@@ -1,6 +1,6 @@
 [
 {
-    "term_index": 6
+    "term_index": 7
 },
 {
     "term_a":"f(a,g(e(x),y))",
@@ -25,4 +25,8 @@
 {
     "term_a":"a(c,e)",
     "term_b":"a(f(b))"
+},
+{
+    "term_a":"q(1,a)",
+    "term_b":"q(1,d)"
 }]

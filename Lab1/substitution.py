@@ -1,5 +1,5 @@
 from term import Term
-from copy import copy, deepcopy
+from copy import deepcopy
 
 class Substitution:
     def __init__(self, term_a: Term, term_b: Term):

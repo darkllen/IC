@@ -70,13 +70,11 @@ class Term:
             string += f'({",".join([str(subterm) for subterm in self.subterms])})'
         return string
 
-    # @property
     def head(self):
         return Term('') if self.subterms == [] else self.subterms[0]
 
     def tail(self):
         if len(self.subterms) < 2:
-
             return Term('')
         else:
             self.subterms.pop(0)
@@ -90,10 +88,10 @@ class Term:
                 self.INNER_VARS[sub.term_a.term].term = sub.term_b.term
         return self
 
-    def __apply(self, sub):
+    def apply_str(self, sub):
         if self.type == TermType.FUNCTION:
             for subterm in self.subterms:
-                subterm.__apply(sub)
+                subterm.apply_str(sub)
         elif self == sub.term_a:
             self.term = sub.term_b.term
             self.subterms = sub.term_b.subterms
